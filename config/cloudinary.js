@@ -10,12 +10,18 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'ttdc_trips',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
+    params: async (req, file) => {
+        const isVideo = file.mimetype.startsWith('video');
+        return {
+            folder: 'ttdc_trips',
+            resource_type: isVideo ? 'video' : 'image',
+            format: undefined, // Let Cloudinary handle format detection
+            public_id: `${Date.now()}-${file.originalname.split('.')[0]}`
+        };
     }
 });
 
 const upload = multer({ storage: storage });
 
 module.exports = { cloudinary, upload };
+

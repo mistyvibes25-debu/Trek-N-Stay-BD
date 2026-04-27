@@ -1,37 +1,40 @@
 const Destination = require('../models/Destination');
 const { cloudinary } = require('../config/cloudinary');
+const asyncHandler = require('../middleware/asyncHandler');
 
-const getAllDestinations = async (req, res) => {
-    try {
-        const destinations = await Destination.find().sort({ name: 1 });
-        res.json(destinations);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+// @desc    Get all destinations
+// @route   GET /api/destinations
+// @access  Public
+const getAllDestinations = asyncHandler(async (req, res) => {
+    const destinations = await Destination.find().sort({ name: 1 });
+    res.json(destinations);
+});
+
+// @desc    Update a destination
+// @route   PUT /api/destinations/:id
+// @access  Private/Admin
+const updateDestination = asyncHandler(async (req, res) => {
+    const { name, description } = req.body;
+    const destination = await Destination.findById(req.params.id);
+    if (!destination) {
+        res.status(404);
+        throw new Error('Destination not found');
     }
-};
 
-const updateDestination = async (req, res) => {
-    try {
-        const { name, description } = req.body;
-        const destination = await Destination.findById(req.params.id);
-        if (!destination) return res.status(404).json({ message: 'Destination not found' });
+    destination.name = name || destination.name;
+    destination.description = description || destination.description;
 
-        destination.name = name || destination.name;
-        destination.description = description || destination.description;
-
-        if (req.file) {
-            if (destination.public_id) {
-                await cloudinary.uploader.destroy(destination.public_id);
-            }
-            destination.imageUrl = req.file.path;
-            destination.public_id = req.file.filename;
+    if (req.file) {
+        if (destination.public_id) {
+            await cloudinary.uploader.destroy(destination.public_id);
         }
-
-        await destination.save();
-        res.json(destination);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+        destination.imageUrl = req.file.path;
+        destination.public_id = req.file.filename;
     }
-};
+
+    const updatedDestination = await destination.save();
+    res.json(updatedDestination);
+});
 
 module.exports = { getAllDestinations, updateDestination };
+
