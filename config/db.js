@@ -5,6 +5,10 @@ let cachedConn = null;
 const connectDB = async () => {
     if (cachedConn) return cachedConn;
 
+    if (!process.env.MONGO_URI) {
+        throw new Error('MONGO_URI is not defined in environment variables');
+    }
+
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 5000
@@ -14,7 +18,7 @@ const connectDB = async () => {
         return conn;
     } catch (error) {
         console.error(`Database Connection Error: ${error.message}`);
-        // Do not use process.exit(1) as it crashes the Vercel function
+        throw error; // Rethrow to allow the errorHandler to capture it
     }
 };
 

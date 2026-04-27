@@ -9,4 +9,4 @@ const paymentSchema = new mongoose.Schema({
     bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', required: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Payment', paymentSchema);
+module.exports = mongoose.models.Payment || mongoose.model('Payment', paymentSchema);

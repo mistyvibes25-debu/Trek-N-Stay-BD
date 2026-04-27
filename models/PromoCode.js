@@ -8,4 +8,4 @@ const promoCodeSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model('PromoCode', promoCodeSchema);
+module.exports = mongoose.models.PromoCode || mongoose.model('PromoCode', promoCodeSchema);

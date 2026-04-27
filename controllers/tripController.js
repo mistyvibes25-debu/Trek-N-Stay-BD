@@ -2,6 +2,7 @@ const Trip = require('../models/Trip');
 const Destination = require('../models/Destination');
 const { cloudinary } = require('../config/cloudinary');
 const asyncHandler = require('../middleware/asyncHandler');
+const connectDB = require('../config/db');
 
 /**
  * Sync destination count based on location
@@ -24,6 +25,9 @@ const syncDestination = async (location) => {
 // @route   GET /api/trips
 // @access  Public
 const getAllTrips = asyncHandler(async (req, res) => {
+    console.log('[API] Fetching all trips...');
+    await connectDB(); // Ensure connection is ready for serverless
+    console.log('[API] Database connected, querying trips...');
     const trips = await Trip.find().sort({ createdAt: -1 });
     res.json(trips);
 });
@@ -32,6 +36,7 @@ const getAllTrips = asyncHandler(async (req, res) => {
 // @route   GET /api/trips/:id
 // @access  Public
 const getTripById = asyncHandler(async (req, res) => {
+    await connectDB();
     const trip = await Trip.findById(req.params.id);
     if (!trip) {
         res.status(404);

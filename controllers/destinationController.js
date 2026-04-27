@@ -1,11 +1,13 @@
 const Destination = require('../models/Destination');
 const { cloudinary } = require('../config/cloudinary');
 const asyncHandler = require('../middleware/asyncHandler');
+const connectDB = require('../config/db');
 
 // @desc    Get all destinations
 // @route   GET /api/destinations
 // @access  Public
 const getAllDestinations = asyncHandler(async (req, res) => {
+    await connectDB();
     const destinations = await Destination.find().sort({ name: 1 });
     res.json(destinations);
 });

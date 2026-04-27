@@ -8,4 +8,4 @@ const destinationSchema = new mongoose.Schema({
     tripCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Destination', destinationSchema);
+module.exports = mongoose.models.Destination || mongoose.model('Destination', destinationSchema);
